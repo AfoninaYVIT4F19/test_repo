@@ -169,15 +169,3 @@ DROP COLUMN IF EXISTS "finst";
 
 # Пункт 4.
 -- Команда не получилась 
-© 2019 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
