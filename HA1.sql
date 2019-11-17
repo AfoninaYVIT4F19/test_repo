@@ -88,16 +88,20 @@ INSERT INTO ratings_data SELECT count(*) over (order by "agency_id", "rat_indust
 FROM  (select distinct "agency_id", "rat_industry", "rat_type", "horizon", "scale_typer", "currency", "backed_flag"
 FROM ratings_task)
 as my_select;
+
 -- Команда добавляет в исходную таблицу ratings_task поле с кодами-ссылками на новую таблицу ratings_data
 ALTER TABLE ratings_task add column "NO" bigint;
+
 -- Команда заполняет поле NO в исходной таблице ratings_task с кодами-ссылками на новую таблицу ratings_data
 UPDATE ratings_task
 SET NO=ratings_data.NO
 FROM ratings_data
 WHERE ratings_task."agency_id"=ratings_data."agency_id";
+
 -- Команда присваивает полю NO ограничение внешнего ключа
 ALTER TABLE public.ratings_task 
 ADD CONSTRAINT fr_key_1 FOREIGN KEY (NO) REFERENCES public.ratings_data (NO);
+
 -- Команда удаляет вынесенную информацию из исходной таблицы ratings_task
 ALTER TABLE public.ratings_task
 DROP COLUMN IF EXISTS "rat_industry",
@@ -106,6 +110,7 @@ DROP COLUMN IF EXISTS "horizon",
 DROP COLUMN IF EXISTS "scale_typer",
 DROP COLUMN IF EXISTS "currency",
 DROP COLUMN IF EXISTS "backed_flag";
+
 -- Создание новой таблицы ent_info для выноса информации о рейтингуемом лице из таблицы ratings_task. Команда создает пустую таблицу с необходимыми столбцами и их форматами.
 CREATE TABLE public.ent_info
 (
@@ -123,6 +128,7 @@ OIDS = FALSE
 TABLESPACE pg_default;
 ALTER TABLE public.ent_info
 OWNER to postgres;
+
 -- Команда исполняет запрос и копирование информации из исходной таблицы ratings_task в новую ent_info
 INSERT INTO ent_info SELECT count(*) ooer (order by "ent_name", "okpo", "ogrn", "inn", "finst") as ent_id,
 "ent_name", "okpo", "ogrn", "inn", "finst"
