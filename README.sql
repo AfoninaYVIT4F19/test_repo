@@ -1,11 +1,11 @@
-# test_repo
-My first attempt
+-- # test_repo
+-- My first attempt
 
-Hello, world!
+-- Hello, world!
 
-Мои приветствия!
+-- Мои приветствия!
 
-МК
+-- МК
 
 -- Домашняя работа №1. Вариант 1. Кредитные рейтинги
 -- Пункт 1.
