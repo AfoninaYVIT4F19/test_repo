@@ -60,7 +60,9 @@ TABLESPACE pg_default;
 
 ALTER TABLE public.scale_EXP_task
     OWNER to postgres; 
-    
+ 
+ -- Комментарий:
+ -- Копирование данных из файлов нужно прописывать кодом.   
     
 -- Пункт 2 и 3.
 -- Создание новой таблицы ratings_data для выноса информации о рейтингах из таблицы ratings_task. Команда создает пустую таблицу с необходимыми столбцами и их форматами.
@@ -158,5 +160,11 @@ DROP COLUMN IF EXISTS "ogrn",
 DROP COLUMN IF EXISTS "inn",
 DROP COLUMN IF EXISTS "finst";
 
+-- Комментарий:
+-- Следует также установить связи с таблицами credit_events_task и scale_EXP_task.
+
 # Пункт 4.
 -- Команда не получилась 
+
+-- Комментарий:
+-- Попробуйте еще раз.
