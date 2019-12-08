@@ -63,7 +63,17 @@ ALTER TABLE public.scale_EXP_task
  
  -- Комментарий:
  -- Копирование данных из файлов нужно прописывать кодом.   
-    
+ 
+ -- Исправление после комментария.
+ -- Команда позволяет скопировать данные из файла ratings_task.csv (предваритено перевести файл из формата xlsx в cvs) в созданную таблицу ratings_tasks.
+ \copy ratings_tasks FROM 'D:/IT/rating_tasks.csv' DELIMITER ',' CSV HEADER;
+ 
+ -- Команда позволяет скопировать данные из файла credit_events_task.csv (предваритено перевести файл из формата xls в cvs) в созданную таблицу credit_events_task.
+  \copy credit_events_task FROM 'D:/IT/credit_events_task.csv' DELIMITER ',' CSV HEADER;
+  
+ -- Команда позволяет скопировать данные из файла scale_EXP_task.csv в созданную таблицу scale_EXP_task.
+   \copy scale_EXP_task FROM 'D:/IT/scale_EXP_task.csv' DELIMITER ',' CSV HEADER;
+   
 -- Пункт 2 и 3.
 -- Создание новой таблицы ratings_data для выноса информации о рейтингах из таблицы ratings_task. Команда создает пустую таблицу с необходимыми столбцами и их форматами.
 CREATE TABLE public.ratings_data
@@ -163,8 +173,48 @@ DROP COLUMN IF EXISTS "finst";
 -- Комментарий:
 -- Следует также установить связи с таблицами credit_events_task и scale_EXP_task.
 
+ -- Исправление после комментария.
+ -- Команда добавляет в исходную таблицу ratings_task поле с кодами-ссылками на таблицу scale_EXP_task.
+ALTER TABLE ratings_task add column "grade_id" bigint;
+
+-- Команда заполняет поле grade_id в исходной таблице ratings_task с кодами-ссылками на таблицу scale_EXP_task
+UPDATE ratings_task
+SET grade_id=scale_EXP_task.grade_id
+FROM scale_EXP_task
+WHERE ratings_task."grade"=scale_EXP_task."grade";
+
+-- Команда присваивает полю grade_id ограничение внешнего ключа
+ALTER TABLE public.ratings_task 
+ADD CONSTRAINT fr_key_2 FOREIGN KEY (grade_id) REFERENCES public.scale_EXP_task (grade_id);
+
+-- Команда добавляет в исходную таблицу credit_events_task поле с кодами-ссылками на таблицу ent_info
+ALTER TABLE credit_events_task add column "ent_id" bigint;
+
+-- Команда заполняет поле ent_id в исходной таблице credit_events_task с кодами-ссылками на таблицу ent_info
+UPDATE credit_events_task
+SET ent_id=ent_info.ent_id
+FROM ent_info
+WHERE credit_events_task."inn"=ent_info."inn";
+
+-- Команда присваивает полю grade_id ограничение внешнего ключа
+ALTER TABLE public.credit_events_task
+ADD CONSTRAINT fr_key_3 FOREIGN KEY (ent_id) REFERENCES public.ent_ifo (ent_id);
+ 
 # Пункт 4.
 -- Команда не получилась 
 
 -- Комментарий:
 -- Попробуйте еще раз.
+
+-- Исправление после комментария.
+-- Команда выводит актуальные рейтинги для вида рейнга "27" на дату 26.03.2014 путем создания двух промежуточных таблиц firdt_table и second_table.
+SELECT ent_id, assign_date, public.ratings_task."grade", public.ent_info."ent_name" 
+FROM (SELECT ent_name, max("date") as assign_date
+FROM public.ent_info INNER JOIN
+	(SELECT *
+	FROM public.ratings_task INNER JOIN public.ratings_data
+	ON public.ratings_task.NO=public.ratings_data.NO
+	WHERE "rat_id=27 AND "date" <= '26.03.2014' AND change NOT IN ('снят', 'приостановлен') as first_table
+	ON public.ent_info.ent_id=first_table.ent_id
+GROUP BY ent_name) as second_table
+INNER JOIN public.ent_info ON second_name.ent_name=public.ent_info.ent_name
