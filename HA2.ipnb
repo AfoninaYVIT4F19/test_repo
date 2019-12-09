@@ -1,0 +1,30 @@
+-- Домашнее задание №2.
+-- Пункт 1.
+
+-- Команда соединяет Python с БД по API. Предварительно необходимо установить пакет Anaconda для исполнения команд в Jupyter Notebook.
+-- Первым шагом установливаем библиотеку psycopg2 для работы с PostgreSQL.
+pip install psycopg2
+
+-- Затем создаем соединение с БД.
+import psycopg2
+import getpass
+conn=psycopg2.connect(user = 'postgres',
+                     database = 'postgres',
+                     host = 'localhost',
+                     port = '5432',
+                     password = getpass.getpass('Insert password: '))
+print(conn.get_dsn_parameters()) 
+
+-- После введения пароля в появившемся поле 'Insert password: ' должно появиться: 
+-- Insert password: ········
+-- {'user': 'postgres', 'dbname': 'postgres', 'host': 'localhost', 'port': '5432', 'tty': '', 'options': '', 'sslmode': 'prefer', 'sslcompression': '0', 'krbsrvname': 'postgres', 'target_session_attrs': 'any'}
+-- Соединение установлено.
+
+-- Пункт 2.
+-- Для того, чтобы обратиться к БД за данными для пункта 3 необходимо установить пакет pandas.
+import pandas as pd
+
+-- Далее с помощью запроса через query получаем из таблицы ratings_task в БД вид рейтинга grade и дату date 
+query="SELECT grade, 'date' FROM ratings_task"
+data=pd.read_sql_query(query(),conn)
+data
