@@ -187,6 +187,9 @@ WHERE ratings_task."grade"=scale_EXP_task."grade";
 ALTER TABLE public.ratings_task 
 ADD CONSTRAINT fr_key_2 FOREIGN KEY (grade_id) REFERENCES public.scale_EXP_task (grade_id);
 
+-- Комментарий:
+-- Не самое лучше по смыслу решение.
+
 -- Команда добавляет в исходную таблицу credit_events_task поле с кодами-ссылками на таблицу ent_info
 ALTER TABLE credit_events_task add column "ent_id" bigint;
 
@@ -214,7 +217,10 @@ FROM public.ent_info INNER JOIN
 	(SELECT *
 	FROM public.ratings_task INNER JOIN public.ratings_data
 	ON public.ratings_task.NO=public.ratings_data.NO
-	WHERE "rat_id=27 AND "date" <= '26.03.2014' AND change NOT IN ('снят', 'приостановлен') as first_table
+	WHERE "rat_id=27" AND "date" <= '26.03.2014' AND change NOT IN ('снят', 'приостановлен') as first_table
 	ON public.ent_info.ent_id=first_table.ent_id
 GROUP BY ent_name) as second_table
-INNER JOIN public.ent_info ON second_name.ent_name=public.ent_info.ent_name
+INNER JOIN public.ent_info ON second_name.ent_name=public.ent_info.ent_name;
+
+-- Комментарий:
+-- Неверно. Для компаний с отозванными рейтингами запрос вернет значения рейтингов, предшествовавшие отзывам.
